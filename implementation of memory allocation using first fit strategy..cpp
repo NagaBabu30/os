@@ -1,31 +1,51 @@
 #include <stdio.h>
 
-int main() {
-    int bsize[10], psize[10], allocation[10] = {-1}, bno, pno, i, j;
+#define MAX_BLOCKS 100
+#define MAX_PROCESSES 100
 
-    printf("Enter number of blocks: ");
-    scanf("%d", &bno);
-    printf("Enter sizes of each block: ");
-    for (i = 0; i < bno; i++)
-        scanf("%d", &bsize[i]);
+void firstFit(int blockSize[], int m, int processSize[], int n) {
+    int allocation[n];
 
-    printf("Enter number of processes: ");
-    scanf("%d", &pno);
-    printf("Enter sizes of each process: ");
-    for (i = 0; i < pno; i++)
-        scanf("%d", &psize[i]);
+    for (int i = 0; i < n; i++)
+        allocation[i] = -1;
 
-    for (i = 0; i < pno; i++)
-        for (j = 0; j < bno; j++)
-            if (allocation[j] == -1 && bsize[j] >= psize[i]) {
-                allocation[j] = i;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (blockSize[j] >= processSize[i]) {
+                allocation[i] = j;
+                blockSize[j] -= processSize[i];
                 break;
             }
+        }
+    }
 
-    printf("\nBlock no.\tSize\t\tProcess no.\t\tSize");
-    for (i = 0; i < bno; i++)
-        printf("\n%d\t\t%d\t\t%s\t\t\t%d", i + 1, bsize[i], allocation[i] != -1 ? "P" : "Not allocated", allocation[i] != -1 ? psize[allocation[i]] : 0);
+    printf("\nProcess No.\tProcess Size\tBlock No.\n");
+    for (int i = 0; i < n; i++) {
+        printf("   %d\t\t   %d\t\t", i + 1, processSize[i]);
+        if (allocation[i] != -1)
+            printf("   %d\n", allocation[i] + 1);
+        else
+            printf("Not Allocated\n");
+    }
+}
+
+int main() {
+    int blockSize[MAX_BLOCKS], processSize[MAX_PROCESSES];
+    int m, n;
+
+    printf("Enter the number of memory blocks: ");
+    scanf("%d", &m);
+    printf("Enter the size of each memory block:\n");
+    for (int i = 0; i < m; i++)
+        scanf("%d", &blockSize[i]);
+
+    printf("\nEnter the number of processes: ");
+    scanf("%d", &n);
+    printf("Enter the size of each process:\n");
+    for (int i = 0; i < n; i++)
+        scanf("%d", &processSize[i]);
+
+    firstFit(blockSize, m, processSize, n);
 
     return 0;
 }
-
